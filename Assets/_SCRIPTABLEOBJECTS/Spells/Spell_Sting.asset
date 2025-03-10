@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a266fa8788f4a924a8b5e807d6e2dd89, type: 3}
   m_Name: Spell_Sting
   m_EditorClassIdentifier: 
-  SpellName: Sting
+  SpellName: Fire Slash
   Damage: 8
+  EffectPrefab: {fileID: 5866012717738357853, guid: 9af9ba98c6d0b73458a6e22c6107e35b, type: 3}

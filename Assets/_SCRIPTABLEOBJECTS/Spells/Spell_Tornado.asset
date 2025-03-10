@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpellName: Tornado
   Damage: 10
+  EffectPrefab: {fileID: 1018806222491923753, guid: c1f67cac93e4da14ebe2799c926fe2a3, type: 3}

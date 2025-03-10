@@ -100,8 +100,9 @@ public class Character : MonoBehaviour, IAttackable
 
     protected void UpdateAnimationParams()
     {
-        anim.SetBool("walk", rb.velocity.magnitude > 0.1f);
-        anim.SetBool("idle", rb.velocity.magnitude <= 0.1f);
+        if (anim.parameterCount <= 0) return;
+            anim.SetBool("walk", rb.velocity.magnitude > 0.1f);
+            anim.SetBool("idle", rb.velocity.magnitude <= 0.1f);
     }
 
     protected void SetCharacterIdleState(bool isIdle)

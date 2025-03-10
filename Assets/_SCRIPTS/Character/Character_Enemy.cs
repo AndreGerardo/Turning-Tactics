@@ -110,11 +110,13 @@ public class Character_Enemy : Character
 
         if (targetPlayer != null)
         {
-            BattleEvent.OnSetupBattle?.Invoke(BattleStartType.PLAYER_NORMAL, damageSource as Character_Player, this);
+            if(damageSource.TryGetComponent<Character_Player>(out Character_Player player))
+                BattleEvent.OnSetupBattle?.Invoke(BattleStartType.PLAYER_NORMAL, player, this);
         }
         else
         {
-            BattleEvent.OnSetupBattle?.Invoke(BattleStartType.PLAYER_ADVANTAGE, damageSource as Character_Player, this);
+            if (damageSource.TryGetComponent<Character_Player>(out Character_Player player))
+                BattleEvent.OnSetupBattle?.Invoke(BattleStartType.PLAYER_ADVANTAGE, player, this);
         }
 
     }

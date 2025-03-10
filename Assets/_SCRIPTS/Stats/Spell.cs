@@ -7,4 +7,5 @@ public class Spell : ScriptableObject
 {
     public string SpellName;
     public int Damage;
+    public GameObject EffectPrefab;
 }

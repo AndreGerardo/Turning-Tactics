@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -15,6 +16,11 @@ public enum BattleStartType
 public class BattleManager : MonoBehaviour
 {
     [Header("BATTLE CONFIGURATION")]
+    [SerializeField] private GameObject basicAttackEffectPrefab;
+    [SerializeField] private GameObject basicDefendEffectPrefab;
+    [SerializeField] private GameObject basicRunEffectPrefab;
+    [SerializeField] private float effectDuration = 0.1f;
+    [SerializeField] private Vector3 effectPosOffset = Vector3.zero;
     private bool isBattleStarted = false;
 
     [Header("BATTLE AREA REFERENCE")]
@@ -121,10 +127,10 @@ public class BattleManager : MonoBehaviour
         isBattleStarted = false;
         battleCamera.SetActive(false);
 
-        currentPlayer.SetInvulnerable(2f);
+        currentPlayer.SetInvulnerable(3f);
         currentPlayer.SetPosition(lastPlayerPos);
 
-        currentEnemy.SetInvulnerable(2f);
+        currentEnemy.SetInvulnerable(3f);
         currentEnemy.SetPosition(lastEnemyPos);
 
         BattleEvent.OnFinishBattle?.Invoke();
@@ -155,6 +161,16 @@ public class BattleManager : MonoBehaviour
         DOVirtual.DelayedCall(2f, () => FinishBattle());
     }
 
+    private void PlayEffectAtPosition(GameObject vfxPrefab, Vector3 targetPos)
+    {
+        GameObject obj = Instantiate(vfxPrefab);
+        obj.transform.position = targetPos;
+        obj.transform.rotation = Quaternion.identity;
+
+        Destroy(obj, effectDuration);
+
+    }
+
 
     #region TURNS
 
@@ -169,11 +185,8 @@ public class BattleManager : MonoBehaviour
         currentEnemy.ReduceHealth(currentPlayer.GetStats().Attack);
         EndTurn();
 
-        currentPlayer.transform.DOMove(currentEnemy.transform.position, 1f)
-            .SetEase(Ease.InOutBack);
-        currentPlayer.transform.DOMove(currentEnemy.transform.position, 0.5f)
-            .SetDelay(1f)
-            .SetEase(Ease.OutBack);
+        PlayEffectAtPosition(basicAttackEffectPrefab, targetEnemyPos.position + effectPosOffset);
+
 
         yield return new WaitForSeconds(2f);
 
@@ -184,9 +197,12 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator PlayerSpell()
     {
-        BattleEvent.OnDisplayBattleMessage?.Invoke($"You used {currentPlayer.GetStats().Spell.SpellName}!");
-        currentEnemy.ReduceHealth(currentPlayer.GetStats().Spell.Damage);
+        Spell spell = currentPlayer.GetStats().Spell;
+        BattleEvent.OnDisplayBattleMessage?.Invoke($"You used {spell.SpellName}!");
+        currentEnemy.ReduceHealth(spell.Damage);
         EndTurn();
+
+        PlayEffectAtPosition(spell.EffectPrefab, targetEnemyPos.position + effectPosOffset);
 
         yield return new WaitForSeconds(2f);
 
@@ -200,6 +216,8 @@ public class BattleManager : MonoBehaviour
         playerDefense = currentPlayer.GetStats().Defend;
         EndTurn();
 
+        PlayEffectAtPosition(basicDefendEffectPrefab, targetPlayerPos.position + effectPosOffset);
+
         yield return new WaitForSeconds(2f);
 
         BattleEvent.OnDisplayBattleMessage?.Invoke(string.Empty);
@@ -210,6 +228,9 @@ public class BattleManager : MonoBehaviour
     private IEnumerator PlayerRun()
     {
         BattleEvent.OnDisplayBattleMessage?.Invoke("You ran for your life.");
+        currentPlayer.SetCharFacing(false);
+
+        PlayEffectAtPosition(basicRunEffectPrefab, targetPlayerPos.position + effectPosOffset);
 
         yield return new WaitForSeconds(2f);
 
@@ -228,11 +249,18 @@ public class BattleManager : MonoBehaviour
         {
             BattleEvent.OnDisplayBattleMessage?.Invoke($"{currentEnemy.charName} attacked!");
             currentPlayer.ReduceHealth(currentEnemy.GetStats().Attack - playerDefense);
+
+            PlayEffectAtPosition(basicAttackEffectPrefab, targetPlayerPos.position + effectPosOffset);
+
         }
         else
         {
-            BattleEvent.OnDisplayBattleMessage?.Invoke($"{currentEnemy.charName} used {currentEnemy.GetStats().Spell.SpellName}!");
-            currentPlayer.ReduceHealth(currentEnemy.GetStats().Spell.Damage - playerDefense);
+            Spell spell = currentEnemy.GetStats().Spell;
+            BattleEvent.OnDisplayBattleMessage?.Invoke($"{currentEnemy.charName} used {spell.SpellName}!");
+            currentPlayer.ReduceHealth(spell.Damage - playerDefense);
+
+            PlayEffectAtPosition(spell.EffectPrefab, targetPlayerPos.position + effectPosOffset);
+
         }
         
         playerDefense = 0;

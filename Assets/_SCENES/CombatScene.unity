@@ -1710,6 +1710,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 909d934dcea85e149bd170718cff1bb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  basicAttackEffectPrefab: {fileID: 7510917703561703415, guid: 58f182895301ad14c98749943cb7c161, type: 3}
+  basicDefendEffectPrefab: {fileID: 1873785423171425199, guid: 7e55b8f55e6e5f24cb6f6a71e72df966, type: 3}
+  basicRunEffectPrefab: {fileID: 4418738553425622304, guid: 76da035f42d42a3458f14c33fb183e6a, type: 3}
+  effectDuration: 0.5
+  effectPosOffset: {x: 0, y: 0.1, z: 0}
   battleCamera: {fileID: 1620834522}
   targetPlayerPos: {fileID: 1489404360}
   targetEnemyPos: {fileID: 1440380885}
